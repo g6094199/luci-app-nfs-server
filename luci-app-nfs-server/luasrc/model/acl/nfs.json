@@ -1,0 +1,20 @@
+{
+  "luci-app-nfs": {
+    "description": "NFS Server LuCI App",
+    "read": {
+      "uci": [ "nfs" ],
+      "file": {
+        "/etc/exports": [ "read" ]
+      }
+    },
+    "write": {
+      "uci": [ "nfs" ],
+      "file": {
+        "/etc/exports": [ "write" ]
+      },
+      "ubus": {
+        "service": [ "restart" ]
+      }
+    }
+  }
+}
