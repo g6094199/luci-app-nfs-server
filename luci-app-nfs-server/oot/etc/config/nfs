@@ -1,0 +1,3 @@
+config share
+    option path '/mnt/data'
+    option options 'rw,sync,no_subtree_check'
