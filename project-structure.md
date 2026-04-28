@@ -1,4 +1,4 @@
-luci-app-nfs/
+luci-app-nfs-server/
 ├── Makefile
 ├── README.md
 ├── htdocs/
