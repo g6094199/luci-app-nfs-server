@@ -20,18 +20,17 @@ jobs:
           - arch: x86_64
             sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/x86/64/openwrt-sdk-25.12.0-x86-64_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
-	  - arch: arm64
-      	    sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/armsr/armv8/openwrt-sdk-25.12.0-armsr-armv8_gcc-14.3.0_musl.Linux-x86_64.tar.zst
+          - arch: arm64
+            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/armsr/armv8/openwrt-sdk-25.12.0-armsr-armv8_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
-          - arch: mipsel
+          - arch: ramips-mt7621
             sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/ramips/mt7621/openwrt-sdk-25.12.0-ramips-mt7621_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
-	  - arch: kirkwood
-      	    sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/kirkwood/generic/openwrt-sdk-25.12.0-kirkwood-generic_gcc-14.3.0_musl.Linux-x86_64.tar.zst
+          - arch: kirkwood
+            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/kirkwood/generic/openwrt-sdk-25.12.0-kirkwood-generic_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
-  	  - arch: octeon
-      	    sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/octeon/generic/openwrt-sdk-25.12.0-octeon-generic_gcc-14.3.0_musl.Linux-x86_64.tar.zst
-
+          - arch: octeon
+            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/octeon/generic/openwrt-sdk-25.12.0-octeon-generic_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
     steps:
       - name: Checkout repository
@@ -42,12 +41,12 @@ jobs:
           sudo apt update
           sudo apt install -y build-essential clang flex bison g++ gawk \
             gettext git libncurses5-dev libssl-dev python3 \
-            rsync unzip zlib1g-dev file wget apktool
+            rsync unzip zlib1g-dev file wget zstd apk-tools
 
       - name: Download SDK for ${{ matrix.target.arch }}
         run: |
-          wget ${{ matrix.target.sdk_url }}
-          tar xf openwrt-sdk-*.tar.zst
+          wget ${{ matrix.target.sdk_url }} -O sdk.tar.zst
+          tar --use-compress-program=unzstd -xf sdk.tar.zst
           mv openwrt-sdk-* openwrt-sdk
 
       - name: Add luci-app-nfs-server to SDK
