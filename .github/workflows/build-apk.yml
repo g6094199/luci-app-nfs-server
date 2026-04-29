@@ -1,4 +1,4 @@
-name: Build luci-app-nfs-server (.apk + multi-arch feed + release)
+name: Build luci-app-nfs-server (.apk + feed + release)
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -68,6 +69,15 @@ jobs:
         run: |
           apk index -o APKINDEX.tar.gz *.apk
 
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: "Release ${{ github.ref_name }}"
+          tag_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -75,5 +85,4 @@ jobs:
           files: |
             feed/${{ matrix.target.arch }}/*.apk
             feed/${{ matrix.target.arch }}/APKINDEX.tar.gz
-
 
