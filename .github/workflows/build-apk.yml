@@ -1,4 +1,4 @@
-name: Build luci-app-nfs-server (.apk + feed)
+name: Build luci-app-nfs-server (.apk + multi-arch feed + release)
 
 on:
   push:
@@ -10,6 +10,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - arch: x86_64
+            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/x86/64/openwrt-sdk-25.12.0-x86-64_gcc-13.2.0_musl.Linux-x86_64.tar.xz
+
+          - arch: arm64
+            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/armvirt/64/openwrt-sdk-25.12.0-armvirt-64_gcc-13.2.0_musl.Linux-x86_64.tar.xz
+
+          - arch: mipsel
+            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/ramips/mt7621/openwrt-sdk-25.12.0-ramips-mt7621_gcc-13.2.0_musl.Linux-x86_64.tar.xz
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,12 +32,12 @@ jobs:
           sudo apt update
           sudo apt install -y build-essential clang flex bison g++ gawk \
             gettext git libncurses5-dev libssl-dev python3 python3-distutils \
-            rsync unzip zlib1g-dev file wget
+            rsync unzip zlib1g-dev file wget apktool
 
-      - name: Download OpenWrt 25.12 SDK (x86_64)
+      - name: Download SDK for ${{ matrix.target.arch }}
         run: |
-          wget https://downloads.openwrt.org/releases/25.12.0/targets/x86/64/openwrt-sdk-25.12.0-x86-64_gcc-13.2.0_musl.Linux-x86_64.tar.xz
-          tar xf openwrt-sdk-25.12.0-x86-64_gcc-13.2.0_musl.Linux-x86_64.tar.xz
+          wget ${{ matrix.target.sdk_url }}
+          tar xf openwrt-sdk-*.tar.xz
           mv openwrt-sdk-* openwrt-sdk
 
       - name: Add luci-app-nfs-server to SDK
@@ -45,85 +58,19 @@ jobs:
 
       - name: Prepare feed directory
         run: |
-          mkdir -p feed
-          cp openwrt-sdk/bin/packages/*/*/luci-app-nfs-server*.apk feed/
+          mkdir -p feed/${{ matrix.target.arch }}
+          cp openwrt-sdk/bin/packages/*/*/luci-app-nfs-server*.apk feed/${{ matrix.target.arch }}/
 
       - name: Generate APKINDEX
-        working-directory: feed
+        working-directory: feed/${{ matrix.target.arch }}
         run: |
           apk index -o APKINDEX.tar.gz *.apk
-
-      - name: Upload feed artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: luci-app-nfs-server-feed
-          path: feed/
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          name: "Release ${{ github.ref_name }}"
-          tag_name: ${{ github.ref_name }}
-          draft: false
-          prerelease: false
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            feed/*.apk
-            feed/APKINDEX.tar.gz
-
-name: Build luci-app-nfs-server (.apk)
-
-on:
-  push:
-    tags:
-      - "v*"
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install build dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential clang flex bison g++ gawk \
-            gettext git libncurses5-dev libssl-dev python3 python3-distutils \
-            rsync unzip zlib1g-dev file wget
-
-      - name: Clone OpenWrt 25.12 SDK
-        run: |
-          wget https://downloads.openwrt.org/releases/25.12.0/targets/x86/64/openwrt-sdk-25.12.0-x86-64_gcc-13.2.0_musl.Linux-x86_64.tar.xz
-          tar xf openwrt-sdk-25.12.0-x86-64_gcc-13.2.0_musl.Linux-x86_64.tar.xz
-          mv openwrt-sdk-* openwrt-sdk
-
-      - name: Add luci-app-nfs-server to SDK
-        run: |
-          mkdir -p openwrt-sdk/package/luci-app-nfs-server
-          cp -r ./* openwrt-sdk/package/luci-app-nfs-server/
-
-      - name: Configure SDK
-        working-directory: openwrt-sdk
-        run: |
-          echo "CONFIG_PACKAGE_luci-app-nfs-server=y" >> .config
-          make defconfig
-
-      - name: Build package (.apk)
-        working-directory: openwrt-sdk
-        run: |
-          make package/luci-app-nfs-server/compile V=s
-
-      - name: Upload .apk artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: luci-app-nfs-server-apk
-          path: openwrt-sdk/bin/packages/*/*/luci-app-nfs-server*.apk
+            feed/${{ matrix.target.arch }}/*.apk
+            feed/${{ matrix.target.arch }}/APKINDEX.tar.gz
 
