@@ -1,6 +1,6 @@
 {
   "luci-app-nfs-server": {
-    "description": "NFS Server LuCI App",
+    "description": "RPCD permissions for NFS Server LuCI App",
     "read": {
       "uci": [ "nfs-server" ],
       "file": {
