@@ -11,7 +11,7 @@ PKG_RELEASE:=1
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Your Name <you@example.com>
 
-include $(TOPDIR)/feeds/luci/luci.mk)
+include $(TOPDIR)/feeds/luci/luci.mk
 
 # Installationsanweisungen
 define Package/luci-app-nfs-server/install
