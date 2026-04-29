@@ -41,7 +41,7 @@ jobs:
           sudo apt update
           sudo apt install -y build-essential clang flex bison g++ gawk \
             gettext git libncurses5-dev libssl-dev python3 \
-            rsync unzip zlib1g-dev file wget zstd apk-tools
+            rsync unzip zlib1g-dev file wget zstd
 
       - name: Download SDK for ${{ matrix.target.arch }}
         run: |
