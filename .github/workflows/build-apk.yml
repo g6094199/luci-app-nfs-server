@@ -27,7 +27,7 @@ jobs:
             sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/ramips/mt7621/openwrt-sdk-25.12.0-ramips-mt7621_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
           - arch: kirkwood
-            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/kirkwood/generic/openwrt-sdk-25.12.0-kirkwood-generic_gcc-14.3.0_musl_eabi.Linux-x86_64.tar.zst
+            sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/kirkwood/generic/openwrt-sdk-25.12.0-kirkwood-generic_gcc-14.3.0_musl.Linux-x86_64.tar.zst
 
           - arch: octeon
             sdk_url: https://downloads.openwrt.org/releases/25.12.0/targets/octeon/generic/openwrt-sdk-25.12.0-octeon-generic_gcc-14.3.0_musl.Linux-x86_64.tar.zst
@@ -49,23 +49,22 @@ jobs:
           tar --use-compress-program=unzstd -xf sdk.tar.zst
           mv openwrt-sdk-* openwrt-sdk
 
+      - name: Update and install feeds
+        working-directory: openwrt-sdk
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
       - name: Add luci-app-nfs-server to SDK
         run: |
           mkdir -p openwrt-sdk/package/luci-app-nfs-server
           cp -r $(ls -A | grep -v openwrt-sdk) openwrt-sdk/package/luci-app-nfs-server/
 
-      - name: Update and install feeds
-  	working-directory: openwrt-sdk
-    	run: |
-    	  ./scripts/feeds update -a
-          ./scripts/feeds install -a
-
       - name: Configure SDK
-  	working-directory: openwrt-sdk
-  	run: |
-    	  echo "CONFIG_PACKAGE_luci-app-nfs-server=y" >> .config
-    	  make defconfig
-
+        working-directory: openwrt-sdk
+        run: |
+          echo "CONFIG_PACKAGE_luci-app-nfs-server=y" >> .config
+          make defconfig
 
       - name: Build luci-app-nfs-server (.apk)
         working-directory: openwrt-sdk
@@ -80,7 +79,7 @@ jobs:
       - name: Generate APKINDEX
         working-directory: feed/${{ matrix.target.arch }}
         run: |
-          apk index -o APKINDEX.tar.gz *.apk
+          ../../openwrt-sdk/staging_dir/host/bin/apk index -o APKINDEX.tar.gz *.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
