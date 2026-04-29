@@ -4,25 +4,25 @@ luci-app-nfs-server/
 ├── htdocs/
 │   └── luci-static/
 │       └── resources/
-│           └── nfs/
+│           └── nfs-server/
 │               └── main.js
 ├── luasrc/
 │   ├── controller/
-│   │   └── nfs.lua
+│   │   └── nfs-server.lua
 │   ├── model/
 │   │   └── acl/
-│   │       └── nfs.json
+│   │       └── nfs-server.json
 │   └── view/
-│       └── nfs/
+│       └── nfs-server/
 │           └── main.htm
 └── root/
     ├── etc/
     │   ├── config/
-    │   │   └── nfs
+    │   │   └── nfs-server
     │   └── init.d/
-    │       └── nfs-config
+    │       └── nfs-server
     └── usr/
         └── share/
             └── rpcd/
                 └── acl.d/
-                    └── luci-app-nfs.json
+                    └── luci-app-nfs-server.json

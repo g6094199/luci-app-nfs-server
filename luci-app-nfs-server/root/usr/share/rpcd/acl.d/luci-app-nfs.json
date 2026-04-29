@@ -1,5 +1,5 @@
 {
-  "luci-app-nfs": {
+  "luci-app-nfs-server": {
     "description": "NFS Server LuCI App",
     "read": {
       "uci": [ "nfs" ],
