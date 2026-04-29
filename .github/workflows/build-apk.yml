@@ -54,11 +54,18 @@ jobs:
           mkdir -p openwrt-sdk/package/luci-app-nfs-server
           cp -r $(ls -A | grep -v openwrt-sdk) openwrt-sdk/package/luci-app-nfs-server/
 
+      - name: Update and install feeds
+  	working-directory: openwrt-sdk
+    	run: |
+    	  ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
       - name: Configure SDK
-        working-directory: openwrt-sdk
-        run: |
-          echo "CONFIG_PACKAGE_luci-app-nfs-server=y" >> .config
-          make defconfig
+  	working-directory: openwrt-sdk
+  	run: |
+    	  echo "CONFIG_PACKAGE_luci-app-nfs-server=y" >> .config
+    	  make defconfig
+
 
       - name: Build luci-app-nfs-server (.apk)
         working-directory: openwrt-sdk
