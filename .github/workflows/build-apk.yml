@@ -76,3 +76,4 @@ jobs:
             feed/${{ matrix.target.arch }}/*.apk
             feed/${{ matrix.target.arch }}/APKINDEX.tar.gz
 
+
