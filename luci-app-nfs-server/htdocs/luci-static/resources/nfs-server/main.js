@@ -12,11 +12,11 @@ const callServiceRestart = rpc.declare({
 
 return view.extend({
     load: function() {
-        return uci.load('nfs');
+        return uci.load('nfs-server');
     },
 
     render: function() {
-        const m = new form.Map('nfs', _('NFS Freigaben'));
+        const m = new form.Map('nfs-server', _('NFS Server Freigaben'));
 
         const s = m.section(form.GridSection, 'share', _('Freigaben'));
         s.addremove = true;
@@ -33,7 +33,7 @@ return view.extend({
 
     handleSaveApply: function(ev, mode) {
         return this.handleSave(ev).then(() => {
-            return callServiceRestart('nfsd');
+            return callServiceRestart('nfs-server');
         });
     }
 });
