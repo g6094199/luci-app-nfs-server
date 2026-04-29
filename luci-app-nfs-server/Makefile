@@ -11,10 +11,7 @@ PKG_RELEASE:=1
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=Your Name <you@example.com>
 
-include $(TOPDIR)/feeds/luci/luci.mk
-
-
-include $(TOPDIR)/feeds/luci/luci.mk
+include $(TOPDIR)/feeds/luci/luci.mk)
 
 # Installationsanweisungen
 define Package/luci-app-nfs-server/install
@@ -36,8 +33,7 @@ define Package/luci-app-nfs-server/install
 
     # RPCD ACL
     $(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-    $(INSTALL_DATA) ./root/usr/share/rpcd/acl.d/luci-app-nfs-server.json \
-        $(1)/usr/share/rpcd/acl.d/
+    $(INSTALL_DATA) ./root/usr/share/rpcd/acl.d/luci-app-nfs-server.json $(1)/usr/share/rpcd/acl.d/
 
     # UCI config
     $(INSTALL_DIR) $(1)/etc/config
@@ -48,5 +44,4 @@ define Package/luci-app-nfs-server/install
     $(INSTALL_BIN) ./root/etc/init.d/nfs-server $(1)/etc/init.d/
 endef
 
-# LuCI Buildsystem
 $(eval $(call BuildPackage,luci-app-nfs-server))
