@@ -13,6 +13,8 @@ PKG_MAINTAINER:=Your Name <you@example.com>
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
+    $(eval $(call BuildPackage,luci-app-nfs-server))
+
 # Installationsanweisungen
 define Package/luci-app-nfs-server/install
 # Controller
