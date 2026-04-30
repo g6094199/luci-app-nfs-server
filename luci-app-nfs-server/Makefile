@@ -44,4 +44,4 @@ define Package/luci-app-nfs-server/install
     $(INSTALL_BIN) ./root/etc/init.d/nfs-server $(1)/etc/init.d/
 endef
 
-$(eval $(call BuildPackage,luci-app-nfs-server))
+    $(eval $(call BuildPackage,luci-app-nfs-server))
